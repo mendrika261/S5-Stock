@@ -34,6 +34,7 @@
     <h2>Du <span th:text="${stockState.getStartDate()}"></span> au <span th:text="${stockState.getEndDate()}"></span></h2>
     <table border="1">
         <tr>
+            <th>Code</th>
             <th>Produit</th>
             <th>Quantité initial</th>
             <th>Reste</th>
@@ -43,6 +44,7 @@
         </tr>
         <tr th:each="stock: ${stockState.getStock()}">
             <td th:text="${stock.getProduct().getCode()}"></td>
+            <td th:text="${stock.getProduct().getName()}"></td>
             <td th:text="${stock.getInitialQuantity()}"></td>
             <td th:text="${stock.getRemainingQuantity()}"></td>
             <td th:text="${stock.getUnitPrice()}"></td>
