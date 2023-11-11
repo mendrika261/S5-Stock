@@ -2,19 +2,24 @@ package mg.s5stock.service;
 
 import lombok.Getter;
 import lombok.Setter;
+import mg.s5stock.model.core.ProductType;
 import mg.s5stock.model.core.Stock;
 import mg.s5stock.model.core.StockState;
 import mg.s5stock.model.entity.Product;
+import mg.s5stock.model.entity.StockIn;
+import mg.s5stock.model.entity.StockOut;
 import mg.s5stock.model.entity.Store;
 import mg.s5stock.repository.ProductRepository;
 import mg.s5stock.repository.StockInRepository;
 import mg.s5stock.repository.StockOutRepository;
 import mg.s5stock.repository.StoreRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Getter
 @Setter
@@ -85,5 +90,46 @@ public class StockService {
     public StockState getStockState(String productCode, LocalDateTime startDate, LocalDateTime endDate) {
         List<Stock> stocks = getStocks(productCode, startDate, endDate);
         return new StockState(startDate, endDate, stocks);
+    }
+
+    // Stock out
+    @Transactional
+    public void createStockOut(String productCode, long storeId, double quantity, LocalDateTime date) {
+        if (quantity <= 0)
+            throw new RuntimeException("La quantité doit être supérieure à 0");
+
+        Product product = productRepository.findByCodeLikeIgnoreCase(productCode).orElseThrow(() -> new RuntimeException("Le produit n'existe pas"));
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("Le magasin n'existe pas"));
+
+        double remainingQuantity = getQuantity(product.getId(), store.getId(), date);
+        if (remainingQuantity < quantity)
+            throw new RuntimeException("La quantité en stock est insuffisante (" + remainingQuantity + ")");
+
+        List<StockIn> stockIns;
+        if(product.getProductType().equals(ProductType.FIFO))
+            stockIns = stockInRepository.findByProductAndStoreAndRemindingQuantityNotOrderByDateAsc(product, store, 0);
+        else
+            stockIns = stockInRepository.findByProductAndStoreAndRemindingQuantityNotOrderByDateDesc(product, store, 0);
+
+        StockOut stockOut;
+        for (StockIn stockIn : stockIns) {
+            stockOut = new StockOut(product, store, stockIn, date);
+            if (stockIn.getRemindingQuantity() >= quantity) {
+                stockOut.setQuantity(quantity);
+                stockOutRepository.save(stockOut);
+
+                stockIn.setRemindingQuantity(stockIn.getRemindingQuantity() - quantity);
+                stockInRepository.save(stockIn);
+
+                break;
+            } else {
+                stockOut.setQuantity(stockIn.getRemindingQuantity());
+                stockOutRepository.save(stockOut);
+
+                quantity -= stockIn.getRemindingQuantity();
+                stockIn.setRemindingQuantity(0);
+                stockInRepository.save(stockIn);
+            }
+        }
     }
 }

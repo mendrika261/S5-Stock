@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface StockOutRepository extends JpaRepository<StockOut, Long> {
-    @Query("select sum(s.quantity) as p from StockOut s where s.product.id = ?1 and s.store.id = ?2 and s.date < ?3")
+    @Query("select sum(s.quantity) from StockOut s where s.product.id = ?1 and s.store.id = ?2 and s.date < ?3")
     Optional<Double> getQuantity(long productId, long storeId, LocalDateTime date);
 
     @Query("select sum(s.quantity * s.stockIn.unitPrice) from StockOut s where s.product.id = ?1 and s.store.id = ?2 and s.date < ?3")

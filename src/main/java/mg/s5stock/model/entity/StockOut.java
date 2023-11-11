@@ -3,6 +3,7 @@ package mg.s5stock.model.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import mg.s5stock.model.core.Stock;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +34,16 @@ public class StockOut {
 
     @Column(name = "date", nullable = false)
     private LocalDateTime date = LocalDateTime.now();
+
+    public StockOut() {
+    }
+
+    public StockOut(Product product, Store store, StockIn stockIn, LocalDateTime date) {
+        setProduct(product);
+        setStore(store);
+        setStockIn(stockIn);
+        setDate(date);
+    }
 
     public double getPrice() {
         return getQuantity() * getStockIn().getUnitPrice();
