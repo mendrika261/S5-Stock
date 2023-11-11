@@ -48,4 +48,11 @@ public class StockOut {
     public double getPrice() {
         return getQuantity() * getStockIn().getUnitPrice();
     }
+
+    public void setQuantity(double quantity) {
+        if (quantity < 0) {
+            throw new IllegalArgumentException("La quantité ne peut pas être négative");
+        }
+        this.quantity = quantity;
+    }
 }

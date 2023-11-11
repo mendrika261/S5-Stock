@@ -43,4 +43,25 @@ public class StockIn {
     public double getTotalPrice() {
         return getInitialQuantity() * getUnitPrice();
     }
+
+    public void setInitialQuantity(double initialQuantity) {
+        if (initialQuantity < 0) {
+            throw new IllegalArgumentException("La quantité initiale ne peut pas être négative");
+        }
+        this.initialQuantity = initialQuantity;
+    }
+
+    public void setRemindingQuantity(double remindingQuantity) {
+        if (remindingQuantity < 0) {
+            throw new IllegalArgumentException("La quantité restante ne peut pas être négative");
+        }
+        this.remindingQuantity = remindingQuantity;
+    }
+
+    public void setUnitPrice(double unitPrice) {
+        if (unitPrice < 0) {
+            throw new IllegalArgumentException("Le prix unitaire ne peut pas être négatif");
+        }
+        this.unitPrice = unitPrice;
+    }
 }

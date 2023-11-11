@@ -32,8 +32,12 @@ public class StockController {
         Store[] stores = storeService.getStores();
 
         StockState stockState = null;
-        if(startDate != null && endDate != null)
-            stockState = stockService.getStockState(Objects.requireNonNullElse(productCode, "%"), startDate, endDate);
+        try {
+            if (startDate != null && endDate != null)
+                stockState = stockService.getStockState(Objects.requireNonNullElse(productCode, "%"), startDate, endDate);
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
 
         model.addAttribute("stockState", stockState);
         model.addAttribute("stores", stores);

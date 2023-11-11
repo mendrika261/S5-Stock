@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -10,6 +10,8 @@
 <body>
 
 <h1>Etat de stock</h1>
+
+<p th:text="${error}"></p>
 
 <form method="get">
     <label for="product">Produit</label>

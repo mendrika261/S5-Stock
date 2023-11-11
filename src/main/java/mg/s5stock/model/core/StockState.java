@@ -33,4 +33,17 @@ public class StockState {
         }
         return totalPrice;
     }
+
+    public void setEndDate(LocalDateTime endDate) {
+        if(getStartDate() == null)
+            throw new IllegalArgumentException("La date de début doit être définie avant la date de fin");
+        if(endDate.isBefore(getStartDate()))
+            throw new IllegalArgumentException("La date de fin doit être après la date de début");
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        if (totalPrice < 0)
+            throw new IllegalArgumentException("Le prix total doit être positif");
+        this.totalPrice = totalPrice;
+    }
 }
