@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Stock</title>
+</head>
+<body>
+
+<h1>Etat de stock</h1>
+
+<form method="get">
+    <label for="product">Produit</label>
+    <input type="text" id="product" name="productCode" th:value="${param.get('productCode')}"> <br>
+
+    <!--<label for="store">Magasin</label>
+    <select name="store" id="store">
+        <option value="">Tous les magasins</option>
+        <option th:each="store: ${stores}" th:value="${store.getId()}" th:text="${store.getName()}"></option>
+    </select> <br>-->
+
+    <label for="startDate">Date initial</label>
+    <input type="datetime-local" name="startDate" id="startDate" required th:value="${param.get('startDate')}"> <br>
+
+    <label for="endDate">Date fin</label>
+    <input type="datetime-local" name="endDate" id="endDate" required th:value="${param.get('endDate')}"> <br>
+
+    <input type="submit">
+</form>
+
+<div th:if="${stockState}">
+    <h2>Du <span th:text="${stockState.getStartDate()}"></span> au <span th:text="${stockState.getEndDate()}"></span></h2>
+    <table border="1">
+        <tr>
+            <th>Produit</th>
+            <th>Quantité initial</th>
+            <th>Reste</th>
+            <th>Prix M.U.</th>
+            <th>Prix total</th>
+            <th>Magasin</th>
+        </tr>
+        <tr th:each="stock: ${stockState.getStock()}">
+            <td th:text="${stock.getProduct().getCode()}"></td>
+            <td th:text="${stock.getInitialQuantity()}"></td>
+            <td th:text="${stock.getRemainingQuantity()}"></td>
+            <td th:text="${stock.getUnitPrice()}"></td>
+            <td th:text="${stock.getTotalPrice()}"></td>
+            <td th:text="${stock.getStore().getName()}"></td>
+        </tr>
+        <tr>
+            <th colspan="4">Total</th>
+            <th th:text="${stockState.getTotalPrice()}"></th>
+            <th></th>
+        </tr>
+    </table>
+</div>
+
+
+</body>
+</html>
